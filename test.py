@@ -16,6 +16,13 @@ for i in range(11):
 t1.print("This is Terminal 1\n")
 t2.print("This is Terminal 2\n")
 print("This is the main terminal")
-print("Exiting in 10 seconds")
-sleep(10)
+
+#close the terminals (this is not necessary if the program is to be terminated)
+print("Closing terminals in 5 seconds")
+sleep(5)
+t1.close()
+t2.close()
+
+print("Exiting in 5 seconds")
+sleep(5)
 quit()

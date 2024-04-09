@@ -13,19 +13,20 @@ class terminal(threading.Thread):
         self.font = font
         self.root = None
         self.st = None
-        threading.Thread.__init__(self)
-        self.daemon = True  # terminate when the main thread terminates
+        threading.Thread.__init__(self, daemon=True)  # kill child thread on main thread exit
         self.start()
         sleep(0.5)  # wait for window to open
 
-    def callback(self):
-        self.root.destroy()
-        self.root = None
-        self.st = None
+    def close(self):
+        if self.root is not None:
+            self.root.quit()
+            self.root.update()
+            self.root = None
+            self.st = None
 
     def run(self):
         self.root = tk.Tk()
-        self.root.protocol("WM_DELETE_WINDOW", self.callback)
+        self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.title(self.title)
         self.st = ScrolledText(self.root, height=self.height, width=self.width, font=self.font)
         self.st.pack()
@@ -33,7 +34,8 @@ class terminal(threading.Thread):
 
     def print(self, toPrint):
         if self.root is None or self.st is None:
-            return None  # window has been closed; raise error?
+            raise Exception(f"Terminal \"{self.title}\" is closed")
+            #print(f"Terminal {self.title} is closed")
         else:
             self.st.configure(state="normal")
             self.st.see("end")  # show last line printed (could also put this under "insert" but there would be a gap)
