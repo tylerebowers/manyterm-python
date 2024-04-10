@@ -28,7 +28,7 @@ class terminal(threading.Thread):
         self.root = tk.Tk()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.title(self.title)
-        self.st = ScrolledText(self.root, height=self.height, width=self.width, font=self.font)
+        self.st = ScrolledText(self.root, height=self.height, width=self.width, wrap="none", font=self.font)
         self.st.pack()
         self.root.mainloop()
 
