@@ -6,7 +6,7 @@ import threading
 
 class terminal(threading.Thread):
 
-    def __init__(self, title="Terminal", height=20, width=100, font=("Courier New", "12"), backgroundColor="gray5", textColor="snow", allowClosing=True, ignoreClosedPrints=True):
+    def __init__(self, title="Terminal", height=20, width=100, font=("Courier New", "12"), backgroundColor="gray5", textColor="snow", allowClosing=True, redirectClosedPrints=True):
         #params
         self.title = title
         self.height = height
@@ -15,7 +15,7 @@ class terminal(threading.Thread):
         self.backgroundColor = backgroundColor
         self.textColor = textColor
         self.allowClosing = allowClosing
-        self.ignoreClosedPrints = ignoreClosedPrints
+        self.redirectClosedPrints = redirectClosedPrints
         #internal variables
         self._root = None  # main window
         self._tb = None  # text box
@@ -50,8 +50,9 @@ class terminal(threading.Thread):
 
     def print(self, toPrint, end="\n"):
         if self._root is None or not self.isOpen:
-            if not self.ignoreClosedPrints: return print(f"Terminal \"{self.title}\" is closed")
-            #if not self.ignoreClosedPrints: raise Exception(f"Terminal \"{self.title}\" is closed")
+            if self.redirectClosedPrints: print(toPrint, end=end)  # redirect output
+            #return print(f"Terminal \"{self.title}\" is closed")
+            #raise Exception(f"Terminal \"{self.title}\" is closed")
         else:
             self._safeExit = False  # needed so that we don't kill mainloop while printing
             self._tb.configure(state="normal")

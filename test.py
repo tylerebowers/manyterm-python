@@ -19,11 +19,15 @@ t2.print("This is a long line to show that the text will not wrap around to the 
 print("This is the main terminal")
 
 # close terminal 1
-print("Closing terminal 1 in 10 seconds.")
-sleep(10)
+print("Closing terminal 1 in 5 seconds.")
+sleep(5)
 t1.close()
+sleep(1)
+print("If terminal 1 is closed (and ignoreAfterClose is False (default)), then t1.print attempts will be redirected to main terminal.")
+t1.print("This line was printed to Terminal 1 but it was redirected to the main terminal. This is because terminal 1 was closed.")
+sleep(5)
 
 # close terminal 2 on exit
-print("Exiting in 10 seconds, terminal 2 will close when the main program exits.")
-sleep(10)
+print("Exiting in 5 seconds, terminal 2 will close when the main program exits.")
+sleep(5)
 quit()
