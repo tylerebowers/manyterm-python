@@ -6,12 +6,14 @@ import threading
 
 class terminal(threading.Thread):
 
-    def __init__(self, title="Terminal", height=20, width=100, font=("Courier New", "12"), allowClosing=True, ignoreClosedPrints=True):
+    def __init__(self, title="Terminal", height=20, width=100, font=("Courier New", "12"), backgroundColor="gray5", textColor="snow", allowClosing=True, ignoreClosedPrints=True):
         #params
         self.title = title
         self.height = height
         self.width = width
         self.font = font
+        self.backgroundColor = backgroundColor
+        self.textColor = textColor
         self.allowClosing = allowClosing
         self.ignoreClosedPrints = ignoreClosedPrints
         #internal variables
@@ -37,7 +39,7 @@ class terminal(threading.Thread):
         self._root.title(self.title)
         self._tb = tk.Text(self._root, height=self.height, width=self.width, wrap="none", font=self.font)
         self._tb.pack(side="left", fill="both", expand=True)
-        self._tb.configure(state="disabled")
+        self._tb.configure(state="disabled", bg=self.backgroundColor, fg=self.textColor)
         sizegrip = ttk.Sizegrip(self._tb)
         sizegrip.configure(cursor="sizing")
         sizegrip.bind("<1>", self._resize_start)
