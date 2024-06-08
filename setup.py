@@ -19,7 +19,7 @@ setup(
     install_requires=[],
     keywords=['python', 'terminal', 'print'],
     classifiers=[
-        'Topic :: Office/Business :: Financial :: Investment',
+        'Topic :: Terminals',
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
@@ -28,7 +28,7 @@ setup(
         'Natural Language :: English',
     ],
     project_urls={
-        'Source': 'https://github.com/tylerebowers/Schwab-API-Python',
-        'PyPI': 'https://pypi.org/project/schwabdev/'
+        'Source': 'https://github.com/tylerebowers/manyterm-python',
+        'PyPI': 'https://pypi.org/project/manyterm/'
     }
 )

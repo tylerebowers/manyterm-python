@@ -25,7 +25,7 @@ sleep(10)
 t1.close()
 print("Closed terminal 1")
 
-t1.print("Closed prints will not do anything.")
+t1.print("Closed prints will not do anything.")  # no errors thrown since user can close at any time
 
 # close terminal 2 on exit
 print("Exiting in 10 seconds, terminal 2 will close when the main program exits.")

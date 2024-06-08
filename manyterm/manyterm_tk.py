@@ -4,7 +4,7 @@ from tkinter import ttk
 import threading
 
 
-class terminal(threading.Thread):
+class Terminal(threading.Thread):
 
     def __init__(self, title="Terminal", height=20, width=100, font=("Courier New", "12"), backgroundColor="gray5", textColor="snow", allowClosing=True, redirectClosedPrints=True):
         #params
