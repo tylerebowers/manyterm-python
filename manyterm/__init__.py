@@ -1,0 +1,1 @@
+from .manyterm import Terminal
