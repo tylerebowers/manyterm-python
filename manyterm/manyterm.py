@@ -77,7 +77,7 @@ class Terminal:
         if sys.platform == "linux":
             subprocess.run(('gnome-terminal', '-t', f'{title}', '--', 'bash', '-c', f'{sys.executable} {self._path} {self._uid}'), shell=False)
         elif sys.platform == "win32":
-            subprocess.run(('start', '/wait','cmd', '/c', f'{sys.executable} {self._path} {self._uid}'), shell=True)
+            subprocess.Popen(('start', '/wait','cmd', '/c', f'{sys.executable} {self._path} {self._uid}'), shell=True)
         elif sys.platform == "darwin":
             subprocess.run(("osascript", "-e", f"tell application \"Terminal\" to do script \"{sys.executable} {self._path} {self._uid};exit\""), shell=False)
         _Server.listen()  # wait for window to open and listen for new connection

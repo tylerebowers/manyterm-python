@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 DESCRIPTION = 'manyterm - spawn multiple terminals to print to'
 with open('README.md', 'r') as f:
     LONG_DESCRIPTION = f.read()
