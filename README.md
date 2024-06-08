@@ -1,4 +1,5 @@
 # Manyterm
+![PyPI - Version](https://img.shields.io/pypi/v/manyterm) ![PyPI - Downloads](https://img.shields.io/pypi/dm/manyterm) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=8VDFKHMBFSC2Q&no_recurring=0&currency_code=USD)  
 Spawn multiple terminals to print to.  
 Compatible with Windows, Linux, and MacOS.    
 ### Installation
