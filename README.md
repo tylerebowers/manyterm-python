@@ -2,7 +2,7 @@
 Spawn multiple terminals to print to.  
 Compatible with Windows, Linux, and MacOS.    
 ### Installation
-`pip install manyterm`
+`pip install manyterm` or `pip3 install manyterm`
 ### Usage
 ```py
 import manyterm 
