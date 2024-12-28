@@ -51,16 +51,16 @@ Usage
 Description
 -----------
 
-This program creates multiple terminals in python. New terminals can only be printed to (no input). `tests/test.py` contains an example of how to use this program. A server is used to print to client windows based on a uuid. When a new window object is made `manyterm.Terminal()` the program checks to make sure that the server is running, then assigns itself a uuid, and then the program calls itself from a new terminal using the uuid as an argument. The new program contacts the server with its' uuid and the connection is made.
+This program creates multiple terminals in python. New terminals can only be printed to (no input). :code:`tests/test.py` contains an example of how to use this program. A server is used to print to client windows based on a uuid. When a new window object is made :code:`manyterm.Terminal()` the program checks to make sure that the server is running, then assigns itself a uuid, and then the program calls itself from a new terminal using the uuid as an argument. The new program contacts the server with its' uuid and the connection is made.
 
 Windows 11
 ^^^^^^^^^^
-.. image:: tests/screenshot-win.png
+.. image:: docs/screenshots/screenshot-win.png
 
 Linux (Ubuntu 23.10)
 ^^^^^^^^^^^^^^^^^^^^
-.. image:: tests/screenshot-linux.png
+.. image:: docs/screenshots/screenshot-linux.png
 
 MacOS Sonoma
 ^^^^^^^^^^^^
-.. image:: tests/screenshot-macos.jpg
+.. image:: docs/screenshots/screenshot-macos.jpg
