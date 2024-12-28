@@ -12,9 +12,11 @@ _MANYTERM_HOST = '127.0.0.1'
 if sys.platform not in ["linux", "win32", "darwin"]:
     raise Exception(f"Platform \"{sys.platform}\" not supported for package manyterm")
 
-# server for sending text and listening for new connections
-# all static methods so there is only one instance
+
 class _Server:
+    """
+    Server hosted by the running package to handle connections to windows
+    """
 
     _running = False
     _socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -22,6 +24,12 @@ class _Server:
 
     @staticmethod
     def start():
+        """
+        Start the server (if not already running)
+
+        Returns:
+            None
+        """
         if not _Server._running:
             _Server._running = True
             _Server._socket.bind((_MANYTERM_HOST, _MANYTERM_PORT))
@@ -33,6 +41,12 @@ class _Server:
     # listen for new connections
     @staticmethod
     def listen():
+        """
+        Listens for new connections to this server
+
+        Returns:
+            None
+        """
         data, addr = _Server._socket.recvfrom(1024)
         if data is not None:
             _Server._connections[data.decode('utf-8')] = addr
@@ -40,16 +54,35 @@ class _Server:
             assert Exception("Could not bind window to server")
 
 
-    @staticmethod # print to a window based on the uid
+    @staticmethod
     def send(uid, b):
+        """
+        Send a message(b) to a window based on the uid
+
+        Args:
+            uid (str): the uid of the window
+            b (bytes): the message to send
+
+        Returns:
+            None
+        """
         addr = _Server._connections.get(uid, None)
         if addr is not None:
             _Server._socket.sendto(b, addr)
         else:
             assert Exception("Cannot print to closed terminal")
 
-    @staticmethod # close a window based on the uid
+    @staticmethod
     def close(uid):
+        """
+        Closes a window based on the uid
+
+        Args:
+            uid (str): the uid of the window
+
+        Returns:
+            None
+        """
         _Server._socket.sendto(bytes(0), _Server._connections.get(uid))
         _Server._connections.pop(uid)
 
@@ -65,9 +98,13 @@ class Terminal:
     _path = os.path.abspath(__file__)
 
     def __init__(self, title="Terminal"):
-        """
-        Start a new terminal window
-        :param title: the title of the window (linux only)
+        """Start a new terminal window
+
+            Args:
+                title (str): the title of the window (linux only)
+
+            Returns:
+                object: Terminal object
         """
         # start server (if not running)
         _Server.start()
@@ -85,28 +122,44 @@ class Terminal:
     def print(self, txt, end="\n"):
         """
         Prints to the window
-        :param txt: the string to print
-        :param end: the end of the string
+
+        Args:
+            txt: the string to print
+            end: the end of the string
+
+        Returns:
+            None
         """
         _Server.send(self._uid, bytes(txt+end, 'utf-8'))
 
     def close(self):
         """
         Closes the window
+
+        Returns:
+            None
         """
         _Server.close(self._uid)
 
     def close_all(self):
         """
         Closes all windows
+
+        Returns:
+            None
         """
         _Server.stop()
 
 
-# called from subprocess to open window
-# acts as a client to connect to the server and listens for data to print
 class _TerminalClient:
     def __init__(self):
+        """
+        Called from subprocess to open window
+        Acts as a client to connect to the server and listens for data to print
+
+        Returns:
+            None
+        """
         if len(sys.argv) != 2:
             raise Exception("Usage: python3 manyterm.py <uid>")
 
