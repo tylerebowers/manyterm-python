@@ -55,12 +55,12 @@ This program creates multiple terminals in python. New terminals can only be pri
 
 Windows 11
 ^^^^^^^^^^
-.. image:: docs/screenshots/screenshot-win.png
+.. image:: screenshots/screenshot-win.png
 
 Linux (Ubuntu 23.10)
 ^^^^^^^^^^^^^^^^^^^^
-.. image:: docs/screenshots/screenshot-linux.png
+.. image:: screenshots/screenshot-linux.png
 
 MacOS Sonoma
 ^^^^^^^^^^^^
-.. image:: docs/screenshots/screenshot-macos.jpg
+.. image:: screenshots/screenshot-macos.jpg
