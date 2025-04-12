@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.1'
+VERSION = '2.0.0'
 DESCRIPTION = 'Manyterm - spawn multiple terminals to print to'
 with open('README.md', 'r') as f:
     LONG_DESCRIPTION = f.read()
@@ -16,7 +16,7 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(),
     python_requires='>=3.8',
-    install_requires=[],
+    install_requires=["psutil"],
     keywords=['python', 'terminal', 'print'],
     classifiers=[
         'Topic :: Terminals',

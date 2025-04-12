@@ -1,10 +1,11 @@
-import manyterm
+#python -m tests.printing
+import manyterm 
 from time import sleep
 
 
 #make new terminals
 t1 = manyterm.Terminal()
-t2 = manyterm.Terminal(title="Customized Title (t2)")
+t2 = manyterm.Terminal(title="Customized Title (t2)", cols=120, rows=36)
 #sleep(5)
 
 #use the new terminals
@@ -16,7 +17,7 @@ for i in range(21):
 
 t1.print("This is Terminal 1")
 t2.print("This is Terminal 2")
-t2.print("This is a long line to show that the text will wrap around to the next line. Here is some more text so that I can actually make the entire length.")
+t1.print("This is a long line to show if the text will wrap around to the next line. Here is some more text so that I can actually make the entire length.")
 print("This is the main terminal")
 
 # close terminal 1
