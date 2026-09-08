@@ -17,6 +17,8 @@ t1.print("supercalifragilisticexpialidocious", end="") # default end="\n"
 
 t1.close() # close the window
 ```
+*To use a shared terminal, see `demos/shared.py`*
+
 ### Description
 There are two types of terminals that can be made:  
 1. One to Many `manyterm.Terminal()`:

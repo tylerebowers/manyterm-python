@@ -1,9 +1,10 @@
-import subprocess
 import socket
 import atexit
+import struct
 import uuid
 import sys
 import os
+
 
 _MANYTERM_HOST = '127.0.0.1'
 _MANYTERM_PATH = os.path.abspath(__file__)
@@ -11,126 +12,112 @@ _MANYTERM_PATH = os.path.abspath(__file__)
 if sys.platform not in ["linux", "win32", "darwin"]:
     raise Exception(f"Platform \"{sys.platform}\" not supported for package manyterm")
 
+def _send(conn, b):
+    conn.sendall(struct.pack('!I', len(b)) + b)
+
+def _recv_exact(conn, n):
+    buf = bytearray()
+    while len(buf) < n:
+        chunk = conn.recv(n - len(buf))
+        if not chunk:
+            return None
+        buf += chunk
+    return bytes(buf)
+
+def _recv(conn):
+    head = _recv_exact(conn, 4)
+    if head is None:
+        return None
+    return _recv_exact(conn, struct.unpack('!I', head)[0])
+
 class Server:
     running = False
-    socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    socket = None
     connections = {}
 
     @staticmethod
     def start():
-        """
-        Start the server (if not already running)
-        Returns:
-            port (int): the port of the server
-        """
         if not Server.running:
-            Server.running = True
+            Server.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             Server.socket.bind((_MANYTERM_HOST, 0))
+            Server.socket.listen(16)
+            Server.running = True
             atexit.register(Server.stop)
         return Server.socket.getsockname()[1]
-    
-    @staticmethod
-    def send(uid, b):
-        """
-        Send a message(b) to a window based on the uid
-
-        Args:
-            uid (str): the uid of the window
-            b (bytes): the message to send
-
-        Returns:
-            success (bool): whether the message was sent
-        """
-        addr = Server.connections.get(uid, None)
-        if addr is not None:
-            Server.socket.sendto(b, addr)
-            return True
-        else:
-            return False
-    
-    @staticmethod
-    def listen_for_input(uid):
-        """
-        Listens for input from a window based on the uid
-
-        Args:
-            uid (str): the uid of the window
-
-        Returns:
-            None
-        """
-        Server.socket.settimeout(None)
-        expected = Server.connections.get(uid, None)
-        data, addr = Server.socket.recvfrom(1024)
-        if addr == expected:
-            text = data.decode('utf-8')
-            return text
-        
-
-
-    # listen for new connections
-    @staticmethod
-    def listen_for_client():
-        """
-        Listens for new connections to this server
-
-        Returns:
-            None
-        """
-        Server.socket.settimeout(15)
-        data, addr = Server.socket.recvfrom(1024)
-        if data is not None:
-            text = data.decode('utf-8')
-            Server.connections[text] = addr
-        else:
-            assert Exception("Could not bind window to server")
-
 
     @staticmethod
-    def stop(): # close all windows
-        for key in Server.connections:
-            Server.socket.sendto(bytes("c", 'utf-8'), Server.connections.get(key))
-        Server.socket.close()
+    def accept(uid, timeout=15):
+        Server.socket.settimeout(timeout)
+        while True:
+            conn, _ = Server.socket.accept()      # raises socket.timeout
+            conn.settimeout(None)
+            hello = _recv(conn)
+            if hello is None:
+                conn.close()
+                continue
+            Server.connections[hello.decode()] = conn
+            if hello.decode() == uid:
+                return
+
+    @staticmethod
+    def _drop(uid):
+        conn = Server.connections.pop(uid, None)
+        if conn:
+            conn.close()
+
+    @staticmethod
+    def request(uid, b):
+        """Send and wait for the window's reply. None means the window is gone."""
+        conn = Server.connections.get(uid)
+        if conn is None:
+            return None
+        try:
+            _send(conn, b)
+            reply = _recv(conn)
+        except OSError:
+            reply = None
+        if reply is None:
+            Server._drop(uid)
+        return reply
+
+    @staticmethod
+    def stop():
+        for uid in list(Server.connections):
+            conn = Server.connections[uid]
+            try:
+                _send(conn, b'c')
+            except OSError:
+                pass
+            conn.close()
+        Server.connections.clear()
+        if Server.socket:
+            Server.socket.close()
         Server.running = False
 
 class Terminal:
-    def __init__(self, title="Terminal", cols=80, rows=24):
+    def __init__(self, title="Terminal", cols=80, rows=24, terminal=None):
         """Start a new terminal window
 
             Args:
                 title (str): the title of the window (linux only)
                 cols (int): the width of the window
                 rows (int): the height of the window
+                terminal (str): ["gnome", "kde", "konsole", "kitty", "alacritty"] the terminal to use (linux only)
 
             Returns:
                 object: Terminal object
         """
+        from .util import open_terminal
 
         # start server (if not running)
         server_port = Server.start()
         self._uid = str(uuid.uuid4())
 
-
         # open window
-        if sys.platform == "linux":
-            subprocess.run((
-                'gnome-terminal',
-                '--geometry', f'{cols}x{rows}',
-                '-t', title,
-                '--', 'bash', '-c',
-                f'{sys.executable} {_MANYTERM_PATH} {server_port} {self._uid}'
-            ), shell=False)
-        elif sys.platform == "win32":
-            size_command = f'mode con: cols={cols} lines={rows}'
-            subprocess.Popen((
-                'start', '/wait', 'cmd', '/c',
-                f'{size_command} && {sys.executable} {_MANYTERM_PATH} {server_port} {self._uid}'
-            ), shell=True)
-        elif sys.platform == "darwin":
-            #f'tell application "Terminal" to do script "printf \'\\e[8;{height};{width}t\'; {sys.executable} {_MANYTERM_PATH} {server_port} {self._uid}; exit"'
-            subprocess.run(("osascript", "-e", f"tell application \"Terminal\" to do script \"{sys.executable} {_MANYTERM_PATH} {server_port} {self._uid};exit\""), shell=False)
+        cmd = f'{sys.executable} {_MANYTERM_PATH} {server_port} {self._uid}'
+        open_terminal(cmd, title, cols, rows, terminal)
     
-        Server.listen_for_client()
+        Server.accept(self._uid)
         
         
 
@@ -145,8 +132,7 @@ class Terminal:
         Returns:
             None
         """
-        payload = bytes("p"+txt+end, 'utf-8')
-        return Server.send(self._uid, payload)
+        return Server.request(self._uid, b'p' + (txt + end).encode()) == b'ok'
 
     def input(self, txt):
         """
@@ -159,9 +145,8 @@ class Terminal:
         Returns:
             None
         """
-        payload = bytes("i"+txt, 'utf-8')
-        Server.send(self._uid, payload)
-        return Server.listen_for_input(self._uid)
+        reply = Server.request(self._uid, b'i' + txt.encode())
+        return reply.decode() if reply is not None else None
 
     def close(self):
         """
@@ -170,7 +155,13 @@ class Terminal:
         Returns:
             None
         """
-        Server.send(self._uid, bytes("c", 'utf-8'))
+        conn = Server.connections.get(self._uid)
+        if conn:
+            try:
+                _send(conn, b'c')          # fire and forget, no reply expected
+            except OSError:
+                pass
+            Server._drop(self._uid)
 
 
 if __name__ == '__main__':
@@ -184,17 +175,18 @@ if __name__ == '__main__':
     port = int(sys.argv[1])
     uid = sys.argv[2]
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.sendto(bytes(uid, 'utf-8'), (_MANYTERM_HOST, port))
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((_MANYTERM_HOST, port))
+    _send(s, uid.encode())
 
     while True:
-        data, addr = s.recvfrom(1024)
-        text = data.decode('utf-8')
-        if text[0] == "p":
-            print(text[1:], end="")
-        elif text[0] == "i":
-            inp = input(text[1:])
-            s.sendto(bytes(inp, 'utf-8'), (_MANYTERM_HOST, port))
-        elif text[0] == "c":
-            s.close()
+        msg = _recv(s)
+        if msg is None or msg[:1] == b'c':
             break
+        kind, body = msg[:1], msg[1:].decode('utf-8')
+        if kind == b'p':
+            print(body, end="", flush=True)
+            _send(s, b'ok')
+        elif kind == b'i':
+            _send(s, input(body).encode('utf-8'))
+    s.close()

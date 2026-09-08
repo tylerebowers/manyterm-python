@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "manyterm"
+version = "2.1.0"
+description = "Manyterm - spawn multiple terminals to print to."
+readme = { file = "README.md", content-type = "text/markdown" }
+authors = [{name = "Tyler Bowers"}, {email = "tylerebowers@gmail.com"}]
+requires-python = ">=3.8"
+license = "MIT"
+keywords=[
+    "python", 
+    "terminal", 
+    "print",
+]
+classifiers=[
+    "Topic :: Terminals",
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+]
+
+[tool.setuptools]
+py-modules = []
+
+[project.urls]
+Source = "https://github.com/tylerebowers/manyterm-python"
+PyPI = "https://pypi.org/project/manyterm/"
