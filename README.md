@@ -33,9 +33,10 @@ There are two types of terminals that can be made:
 
 Notes:
 * Terminals are probably not thread safe.
-* No errors will be thrown if trying to print to a closed terminal, however if you are using One to Many then you can check the boolean return of print to see if it was successful.  
+* No errors will be thrown if trying to print to a closed terminal, however you can check the boolean return of print to see if it was successful.  
 * The title of the window can be changed in Linux with the `title` parameter.  
 * The size of the window can be changed in Linux and Windows with the `cols` and `rows` parameter, unit is characters.
+* On Linux the terminal can be changed with the `terminal` parameter, manyterm supports `gnome`, `kde` / `konsole`, `kitty`, and `alacritty`.
 
 
 ### How it works:
