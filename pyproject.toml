@@ -1,13 +1,13 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "manyterm"
-version = "2.1.0"
+version = "2.1.2"
 description = "Manyterm - spawn multiple terminals to print to."
 readme = { file = "README.md", content-type = "text/markdown" }
-authors = [{name = "Tyler Bowers"}, {email = "tylerebowers@gmail.com"}]
+authors = [{name = "Tyler Bowers", email = "tylerebowers@gmail.com"}]
 requires-python = ">=3.8"
 license = "MIT"
 keywords=[
@@ -24,8 +24,8 @@ classifiers=[
     "Natural Language :: English",
 ]
 
-[tool.setuptools]
-py-modules = []
+[tool.setuptools.packages.find]
+include = ["manyterm*"]
 
 [project.urls]
 Source = "https://github.com/tylerebowers/manyterm-python"
